@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include "include/oc_sim.h"
-static char *log_file = (char*) "ika.log";
+/* static char *log_file = (char*) "ika.log"; */
 static char *sfile;
 static void configure(int argc, char **argv);
 static void register_segv_handler(void);
@@ -46,7 +46,7 @@ int main(int argc, char **argv, char **envp) {
 
 static void open_log_file(void) {
 #ifdef LOG_FLAG
-	log_fp = fopen(log_file, "w");
+	log_fp = fopen("log.log", "w");
 	if (log_fp==NULL) {
 		perror("fopen log_file");
 		exit(1);
@@ -93,7 +93,7 @@ static void configure(int argc, char **argv) {
 	while ((opt = getopt(argc, argv, "l:")) != -1) {
 		switch (opt) {
 			case 'l' :
-				log_file = optarg;
+				/* log_file = ""; */
 				break;
 
 			default :
@@ -249,7 +249,6 @@ static void print_elapsed_time(void) {
 void print_count(void){
 
         printf("\n使った命令とその回数\n");
-
         if(count[ADDI]!=0){
                 printf("ADDI %d\n",count[ADDI]);
         }
@@ -349,7 +348,27 @@ void print_count(void){
         if(count[NOP]!=0){
                 printf("NOP %d\n",count[NOP]);
         }
-
+        if(count[XOR]!=0){
+                printf("XOR %d\n",count[XOR]);
+        }
+        if(count[AND]!=0){
+                printf("AND %d\n",count[AND]);
+        }
+        if(count[OR]!=0){
+                printf("OR %d\n",count[OR]);
+        }
+        if(count[FTOI]!=0){
+                printf("FTOI%d\n",count[FTOI]);
+        }
+        if(count[ITOF]!=0){
+                printf("ITOF %d\n",count[ITOF]);
+        }
+        if(count[FSQRT]!=0){
+                printf("FSQRT%d\n",count[FSQRT]);
+        }
+        if(count[FLOOR]!=0){
+                printf("FLOOR %d\n",count[FLOOR]);
+        }
 
 }
 
