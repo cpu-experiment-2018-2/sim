@@ -175,6 +175,7 @@ int simulate(void) {
 
 //ゼロレジスタを表示
 #ifndef SILENT
+    printf("pc %d\n", pc);
     printf("実行命令 ");
     print_opcode(ir);
     //命令実行後ではなく命令実行時の現在のレジスタ状態を表示
@@ -186,9 +187,11 @@ int simulate(void) {
     print_cdr(cdr);
     //整数レジスタのint版とfloat版を表示
     for (int i = 0; i < 10; i++) {
-      printf("reg[%d] int %d float %f\n", i + 3, reg[i + 3],
-             *(float *)(&reg[i + 3]));
+      printf("reg[%d] int %d float %f\n", i, reg[i],
+             *(float *)(&reg[i]));
     }
+//      printf("_GRA %d\n %d", _GRA, get_rai ); 
+
     for (int i = 0; i < 10; i++) {
       printf("ram[%d] int %d float %f\n", i, ram[i],
              *(float *)(&ram[i]));
@@ -234,11 +237,27 @@ static inline int exec_op(uint32_t ir) {
     count[opcode] += 1;
     break;
   case ADDI:
-    _GRT = _GRA + _SI;
+si = _SI;
+    if (((si >> 15) & 0x1) == 1) {
+      tmp_un = (0xffff0000 | (si & 0xffff));
+    } else if (((si >> 15) & 0x1) == 0) {
+      tmp_un = (0xffff & si);
+    }
+    si = *(int*)(&tmp_un); 
+
+    _GRT = _GRA + si;
     count[opcode] += 1;
     break;
   case SUBI:
-    _GRT = _GRA - _SI;
+si = _SI;
+    if (((si >> 15) & 0x1) == 1) {
+      tmp_un = (0xffff0000 | (si & 0xffff));
+    } else if (((si >> 15) & 0x1) == 0) {
+      tmp_un = (0xffff & si);
+    }
+    si = *(int*)(&tmp_un); 
+
+    _GRT = _GRA - si;
     count[opcode] += 1;
     break;
   case ADD:
@@ -328,12 +347,33 @@ static inline int exec_op(uint32_t ir) {
     /* if(get_rti(ir) == 31){ */
     /*     printf("load %d %d %d %d %d\n",pc,_GRA,_SI, _GRA+_SI,ram[(_GRA + _SI)]); */
     /* } */
-    _GRT = ram[(_GRA + _SI)];
+    si = _SI;
+    if (((si >> 15) & 0x1) == 1) {
+      tmp_un = (0xffff0000 | (si & 0xffff));
+    } else if (((si >> 15) & 0x1) == 0) {
+      tmp_un = (0xffff & si);
+    }
+    si = *(int*)(&tmp_un); 
+
+    /* printf("hoge load %d %d %d %d %d\n",pc,_GRA,_SI, _GRA+_SI,ram[(_GRA + _SI)]);  */
+    /* printf("fuga load %d %d %d %d %d\n",pc,_GRA,si, _GRA+si,ram[(_GRA + si)]);  */
+
+    _GRT = ram[(_GRA + si)];
     count[opcode] += 1;
     break;
   //メモリに代入
   case STORE:
-    ram[((_GRA + _SI))] = _GRT;
+    si = _SI;
+    if (((si >> 15) & 0x1) == 1) {
+      tmp_un = (0xffff0000 | (si & 0xffff));
+    } else if (((si >> 15) & 0x1) == 0) {
+      tmp_un = (0xffff & si);
+    }
+    si = *(int*)(&tmp_un); 
+    /* printf("piyo store %d %d %d %d %d %d\n",pc,_GRA,_SI, _GRA+_SI,ram[(_GRA + _SI)], _GRT);  */
+    /* printf("nyan store %d %d %d %d %d %d\n",pc,_GRA,si, _GRA+si,ram[(_GRA + si)],_GRT);  */
+
+    ram[((_GRA + si))] = _GRT;
     count[opcode] += 1;
     break;
   case LI:
@@ -513,15 +553,15 @@ static inline int exec_op(uint32_t ir) {
     count[opcode] += 1;
     break;
   case END:
-    for (int i = 0; i < 30; i++) {
-      printf("reg[%d] int %d float %f\n", i , reg[i],
-             *(float *)(&reg[i ]));
-    }
-
-    for (int i = 0; i < 400; i++) {
-      printf("ram[%d] int %d float %f\n", i, ram[i],
-             *(float *)(&ram[i]));
-    }
+    /* for (int i = 0; i < 30; i++) { */
+    /*   printf("reg[%d] int %d float %f\n", i , reg[i], */
+    /*          *(float *)(&reg[i ])); */
+    /* } */
+    /*  */
+    /* for (int i = 0; i < 400; i++) { */
+    /*   printf("ram[%d] int %d float %f\n", i, ram[i], */
+    /*          *(float *)(&ram[i])); */
+    /* } */
     printf("終了\n");
   ;
 
